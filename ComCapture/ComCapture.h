@@ -4,11 +4,17 @@
 #include "ui_ComCapture.h"
 
 #include <QRegularExpression>
-
+#include <QDebug>
 #include "pcap.h"
 #include "winsock2.h"
 
 #include "DataCaptureThread.h"
+#include "DataPackProc.h"
+#include "DataFormat.h"
+
+#include <QVector>
+#include <QColor>
+#include <QTableWidget>
 
 class ComCapture : public QMainWindow
 {
@@ -24,6 +30,10 @@ public slots:
 
 	void on_comboBox_currentIndexChanged(int index);
 
+	void on_dataProc_handle(DataPackProc *data);
+
+    void on_tw_show_cellClicked(int r, int c);
+
 private:
     Ui::ComCaptureClass ui;
 
@@ -37,6 +47,11 @@ private:
 
 	DataCaptureThread *mp_dataCaptueThread;
 
+	QVector<DataPackProc*> m_allData;
+	int countNum;
+
+    int numRow;
+
 private:
 	int initUi();
 
@@ -45,6 +60,7 @@ private:
 	int captureData();
 
 	int startCapture();
+
 	int stopCapture();
 
 };

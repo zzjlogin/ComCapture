@@ -17,7 +17,7 @@ typedef unsigned long	u_long;		//4Byte
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |        48bit(6Byte)         |        48bit(6Byte)  |  16bit   |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |      Destination MacAddr    |    Source MacAddr    | Checksum |
+   |      Destination MacAddr    |    Source MacAddr    |   type   |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 typedef struct Ethernet_Header

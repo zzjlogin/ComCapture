@@ -8,7 +8,7 @@
 - WpdPack：[WpdPack_4_1_2.zip](https://www.winpcap.org/install/bin/WpdPack_4_1_2.zip)
 
 
-qt其他版本下载：
+Qt其他版本下载：
     
     - https://download.qt.io/archive/qt/5.12/5.12.12/
 
@@ -20,10 +20,10 @@ qt其他版本下载：
 
 
 
-**注意** ：
-    
-    - 可以把WpdPack_4_1_2解压的库添加到工程目录，方便更换机器使用。
-    - **ntohs** 函数需要添加库：Ws2_32.lib，否则编译报错
+- **注意** ：
+    + 可以把WpdPack_4_1_2解压的库添加到工程目录，方便更换机器使用。
+    + [`ntohs`](https://docs.microsoft.com/zh-cn/windows/win32/api/winsock2/nf-winsock2-ntohs)函数需要添加库：Ws2_32.lib，否则编译报错
+
 
 ##协议
 

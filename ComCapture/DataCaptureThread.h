@@ -3,13 +3,13 @@
 #include <QObject>
 #include <QThread>
 #include <QDebug>
+#include <QMetaType>
+#include <winsock2.h>
 
 #include "pcap.h"
 #include "DataFormat.h"
 #include "DataPackProc.h"
-#include <Windows.h>
-#include <winsock2.h>
-#include <winsock.h>
+
 class DataCaptureThread : public QThread
 {
 	Q_OBJECT
@@ -28,9 +28,23 @@ public:
 
 	int etherPackageHandle(const u_char *pkt_content, QString &info);
 
+	int ipPackHandle(const u_char *pkt_content, int &ipPack);
+
+	int tcpPackHandle(const u_char *pkt_content, QString &info, int ipPack);
+
+	int udpPackHandle(const u_char *pkt_content, QString &info);
+
+	QString arpPackHandle(const u_char *pkt_content);
+
+    QString dnsPackHandle(const u_char *pkt_content);
+
+    QString icmpPackHandle(const u_char *pkt_content);
+
 protected:
 	void run();
 
+protected:
+    static QString byteToHexString(u_char *str, int size);
 
 private:
 	bool isStop = true;
@@ -41,6 +55,8 @@ private:
 	struct tm local_time;
 	char timeString[16];
 	
+signals:
+	void sendDataPackege(DataPackProc *dataPro);
 
 
 };
