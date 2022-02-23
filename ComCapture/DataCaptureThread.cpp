@@ -1,57 +1,54 @@
 #include "DataCaptureThread.h"
 
 DataCaptureThread::DataCaptureThread(QObject *parent)
-	: QThread(parent)
-	,isStop(true)
+    : QThread(parent)
+    , isStop(true)
 {
-
-	
 
 }
 
 DataCaptureThread::~DataCaptureThread()
 {
-	if (this->isStart())
-	{
-		this->stopCapture();
-		this->wait();
-	}
+    if (this->isStart())
+    {
+        this->stopCapture();
+        this->wait();
+    }
 }
 
 bool DataCaptureThread::stopCapture()
 {
-	isStop = !isStop;
-	return isStop;
+    isStop = !isStop;
+    return isStop;
 }
 
 bool DataCaptureThread::setPointer(pcap_t * ptr)
 {
-	if (ptr)
-	{
-		m_ptr = ptr;
-
-		return true;
-	} 
-	else
-	{
-		return false;
-	}
+    if (ptr)
+    {
+        m_ptr = ptr;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool DataCaptureThread::isStart()
 {
-	return !isStop;
+    return !isStop;
 }
 
 int DataCaptureThread::etherPackageHandle(const u_char *pkt_content, QString &info)
 {
-	Ethernet_Header *ethernet;
-	u_short content_type;
-	ethernet = (Ethernet_Header*)pkt_content;
-	content_type = ntohs(ethernet->type);
-	switch (content_type)
-	{
-	case 0x0800: {
+    Ethernet_Header *ethernet;
+    u_short content_type;
+    ethernet = (Ethernet_Header*)pkt_content;
+    content_type = ntohs(ethernet->type);
+    switch (content_type)
+    {
+    case 0x0800: {
         int ipPackage = 0;
         int res = ipPackHandle(pkt_content, ipPackage);
         switch (res)
@@ -69,127 +66,127 @@ int DataCaptureThread::etherPackageHandle(const u_char *pkt_content, QString &in
         default:
             break;
         }
-		break;
-	}
-	case 0x0806: {
-		info = arpPackHandle(pkt_content);
-		return 1;
-	}
-	default:
-		info = "";
-		return 0;
-		break;
-	}
-	return 0;
+        break;
+    }
+    case 0x0806: {
+        info = arpPackHandle(pkt_content);
+        return 1;
+    }
+    default:
+        info = "";
+        return 0;
+        break;
+    }
+    return 0;
 
 }
 
 int DataCaptureThread::ipPackHandle(const u_char *pkt_content, int &ipPack)
 {
-	IPV4_HEADER *ip;
-	ip = (IPV4_HEADER*)(pkt_content + 14);
-	int protocal = ip->protocol;
-	ipPack = (ntohs(ip->total_length - ((ip->version_IHL)) &0x0F) * 4);
-	return protocal;
+    IPV4_HEADER *ip;
+    ip = (IPV4_HEADER*)(pkt_content + 14);
+    int protocal = ip->protocol;
+    ipPack = (ntohs(ip->total_length - ((ip->version_IHL)) & 0x0F) * 4);
+    return protocal;
 }
 
 int DataCaptureThread::tcpPackHandle(const u_char *pkt_content, QString &info, int ipPack)
 {
-	TCP_Header *tcp;
-	tcp = (TCP_Header *)(pkt_content + 14 + 20);
-	u_short src = ntohs(tcp->src_port);
-	u_short dst = ntohs(tcp->dst_port);
-	QString portSend("");
-	QString portRecv("");
+    TCP_Header *tcp;
+    tcp = (TCP_Header *)(pkt_content + 14 + 20);
+    u_short src = ntohs(tcp->src_port);
+    u_short dst = ntohs(tcp->dst_port);
+    QString portSend("");
+    QString portRecv("");
 
-	int type = 3;
-	int delta = (tcp->header_length) * 4;
-	int tcpLoader = ipPack - delta;
+    int type = 3;
+    int delta = (tcp->header_length) * 4;
+    int tcpLoader = ipPack - delta;
 
-	if (src == 443 || dst == 443)
-	{
-		if (src == 443)
-		{
-			portSend = "(https)";
-		}
-		else
-		{
-			portRecv = "(https)";
-		}
-	}
-	else
-	{
-		info += QString::number(src) + portSend + "->" + QString::number(dst) + portRecv;
-	}
-	QString flag("");
-	if (tcp->flags & 0x08)
-	{
-		flag += "PSH,";
-	}
-	if (tcp->flags & 0x10)
-	{
-		flag += "ACK,";
-	}
-	if (tcp->flags & 0x02)
-	{
-		flag += "SYN,";
-	}
-	if (tcp->flags & 0x20)
-	{
-		flag += "URG,";
-	}
-	if (tcp->flags & 0x01)
-	{
-		flag += "FIN,";
-	}
-	if (tcp->flags & 0x04)
-	{
-		flag += "RST,";
-	}
-	if (flag != "")
-	{
-		flag = flag.left(flag.length() - 1);
-		info += "[" + flag + "]";
-	}
+    if (src == 443 || dst == 443)
+    {
+        if (src == 443)
+        {
+            portSend = "(https)";
+        }
+        else
+        {
+            portRecv = "(https)";
+        }
+    }
+    else
+    {
+        info += QString::number(src) + portSend + "->" + QString::number(dst) + portRecv;
+    }
+    QString flag("");
+    if (tcp->flags & 0x08)
+    {
+        flag += "PSH,";
+    }
+    if (tcp->flags & 0x10)
+    {
+        flag += "ACK,";
+    }
+    if (tcp->flags & 0x02)
+    {
+        flag += "SYN,";
+    }
+    if (tcp->flags & 0x20)
+    {
+        flag += "URG,";
+    }
+    if (tcp->flags & 0x01)
+    {
+        flag += "FIN,";
+    }
+    if (tcp->flags & 0x04)
+    {
+        flag += "RST,";
+    }
+    if (flag != "")
+    {
+        flag = flag.left(flag.length() - 1);
+        info += "[" + flag + "]";
+    }
 
-	u_int sequence = ntohl(tcp->sequence);
-	u_int ack = ntohl(tcp->ack);
-	u_short window = ntohs(tcp->window_size);
+    u_int sequence = ntohl(tcp->sequence);
+    u_int ack = ntohl(tcp->ack);
+    u_short window = ntohs(tcp->window_size);
 
-	info += " Seq=" + QString::number(sequence) + " ACK=" + QString::number(ack) + " win=" + QString::number(window) + " len=" + QString::number(tcpLoader);
-	return type;
+    info += " Seq=" + QString::number(sequence) + " ACK=" + QString::number(ack) + " win=" + QString::number(window) + " len=" + QString::number(tcpLoader);
+    return type;
 }
 
 int DataCaptureThread::udpPackHandle(const u_char *pkt_content, QString &info)
 {
-	UDP_HEADER *udp;
-	udp = (UDP_HEADER *)(pkt_content + 14 + 20);
-	u_short dst = ntohs(udp->dst_port);
-	u_short src = ntohs(udp->src_port);
-	if (dst ==53|| src == 53)
-	{
+    UDP_HEADER *udp;
+    udp = (UDP_HEADER *)(pkt_content + 14 + 20);
+    u_short dst = ntohs(udp->dst_port);
+    u_short src = ntohs(udp->src_port);
+    if (dst == 53 || src == 53)
+    {
         info = dnsPackHandle(pkt_content);
-		return 5;
-	} 
-	else
-	{
-		QString res = QString::number(src) + "->" + QString::number(dst);
-		u_short data_len = ntohs(udp->data_length);
-		res += " len=" + QString::number(data_len);
-		info = res;
-		return 4;
-	}
+        return 5;
+    }
+    else
+    {
+        QString res = QString::number(src) + "->" + QString::number(dst);
+        u_short data_len = ntohs(udp->data_length);
+        res += " len=" + QString::number(data_len);
+        info = res;
+        return 4;
+    }
 
 
 }
 
 QString DataCaptureThread::arpPackHandle(const u_char *pkt_content)
 {
-	ARP_HEADER *arp;
-	arp = (ARP_HEADER*)(pkt_content + 14);
+    ARP_HEADER *arp;
+    arp = (ARP_HEADER*)(pkt_content + 14);
 
-	u_short op = ntohs(arp->op_code);
-	QString res("");
+    u_short op = ntohs(arp->op_code);
+    QString res("");
     u_char *dst_addr = arp->des_ip_addr;
     QString dstIp = QString::number(*dst_addr) + "."
         + QString::number(*(dst_addr + 1)) + "."
@@ -285,35 +282,35 @@ QString DataCaptureThread::icmpPackHandle(const u_char *pkt_content)
 
 void DataCaptureThread::run()
 {
-	isStop = false;
-	while (!isStop)
-	{
-		int res = pcap_next_ex(m_ptr, &header, &pkt_data);
-		if (res)
-		{
-			
-			local_time_sec = header->ts.tv_sec;
-			localtime_s(&local_time, &local_time_sec);
-			strftime(timeString, sizeof timeString, "%H:%M:%S", &local_time);
-			QString info;
-			int type = etherPackageHandle(pkt_data, info);
-			if (type)
-			{
-				//qDebug() << type;
-				DataPackProc *data = new DataPackProc;
-				data->setInfo(info);
-				data->setDataLen(header->len);
-				data->setTimeStamp(timeString);
+    isStop = false;
+    while (!isStop)
+    {
+        int res = pcap_next_ex(m_ptr, &header, &pkt_data);
+        if (res)
+        {
+
+            local_time_sec = header->ts.tv_sec;
+            localtime_s(&local_time, &local_time_sec);
+            strftime(timeString, sizeof timeString, "%H:%M:%S", &local_time);
+            QString info;
+            int type = etherPackageHandle(pkt_data, info);
+            if (type)
+            {
+                //qDebug() << type;
+                DataPackProc *data = new DataPackProc;
+                data->setInfo(info);
+                data->setDataLen(header->len);
+                data->setTimeStamp(timeString);
                 data->setPackType(type);
                 data->setPointer(pkt_data, header->len);
-               // data->setPointer(pkt_data);
-				emit sendDataPackege(data);
-			}
-		
-		}
+                // data->setPointer(pkt_data);
+                emit sendDataPackege(data);
+            }
 
-	}
-	isStop = !isStop;
+        }
+
+    }
+    isStop = !isStop;
 }
 
 QString DataCaptureThread::byteToHexString(u_char *str, int size)

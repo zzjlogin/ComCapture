@@ -1,13 +1,13 @@
 #include "DataPackProc.h"
 
 DataPackProc::DataPackProc()
-	:m_timeStamp("")
-	,m_dataLen(0)
-	,m_packageType(0)
-    ,mp_pkt_content(nullptr)
+    :m_timeStamp("")
+    , m_dataLen(0)
+    , m_packageType(0)
+    , mp_pkt_content(nullptr)
 {
-	
-	
+
+
 }
 
 DataPackProc::~DataPackProc()
@@ -21,102 +21,102 @@ DataPackProc::~DataPackProc()
 
 QString DataPackProc::byteToHexString(u_char *str, int size)
 {
-	QString res("");
-	for (int i=0;i<size;i++)
-	{
-		char high4 = str[i] >> 4;
-		if (high4>=0x0A)
-		{
-			high4 += 0x41 - 0x0A;
-		}
-		else {
-			high4 += 0x30;
-		}
-		char low4 = str[i] >> 4;
-		if (low4 >= 0x0A)
-		{
-			low4 += 0x41 - 0x0A;
-		}
-		else {
-			low4 += 0x30;
-		}
-		res.append(high4).append(low4);
-	}
-	return res;
+    QString res("");
+    for (int i = 0; i < size; i++)
+    {
+        char high4 = str[i] >> 4;
+        if (high4 >= 0x0A)
+        {
+            high4 += 0x41 - 0x0A;
+        }
+        else {
+            high4 += 0x30;
+        }
+        char low4 = str[i] >> 4;
+        if (low4 >= 0x0A)
+        {
+            low4 += 0x41 - 0x0A;
+        }
+        else {
+            low4 += 0x30;
+        }
+        res.append(high4).append(low4);
+    }
+    return res;
 }
 
 void DataPackProc::setDataLen(u_int len)
 {
-	m_dataLen = len;
+    m_dataLen = len;
 }
 
 void DataPackProc::setTimeStamp(QString time)
 {
-	m_timeStamp = time;
+    m_timeStamp = time;
 }
 
 void DataPackProc::setInfo(QString infoStr)
 {
-	m_info = infoStr;
+    m_info = infoStr;
 }
 
 void DataPackProc::setPointer(const u_char *pkt_data, int size)
 {
-	mp_pkt_content = pkt_data;
+    mp_pkt_content = pkt_data;
     mp_pkt_content = new u_char[size];
     memcpy((char*)mp_pkt_content, pkt_data, size);
 }
 
 void DataPackProc::setPackType(int type)
 {
-	m_packageType = type;
+    m_packageType = type;
 }
 
 QString DataPackProc::getDataLen()
 {
-	return QString::number(m_dataLen);
+    return QString::number(m_dataLen);
 }
 
 QString DataPackProc::getTimeStamp()
 {
-	return m_timeStamp;
+    return m_timeStamp;
 }
 
 QString DataPackProc::getInfo()
 {
-	return m_info;
+    return m_info;
 }
 
 QString DataPackProc::getPackType()
 {
-	switch (m_packageType)
-	{
-	case 1:
-		return "ARP";
-	case 2:
-		return "ICMP";
-	case 3:
-		return "TCP";
-	case 4:
-		return "UDP";
-	case 5:
-		return "DNS";
-	case 6:
-		return "TLS";
-	default:
-		return "";
-		break;
-	}
+    switch (m_packageType)
+    {
+    case 1:
+        return "ARP";
+    case 2:
+        return "ICMP";
+    case 3:
+        return "TCP";
+    case 4:
+        return "UDP";
+    case 5:
+        return "DNS";
+    case 6:
+        return "TLS";
+    default:
+        return "";
+        break;
+    }
 
 }
 
 QString DataPackProc::getDstIpAddr()
 {
     IPV4_HEADER *ip;
-    ip = (IPV4_HEADER*)(mp_pkt_content+ 14);
+    ip = (IPV4_HEADER*)(mp_pkt_content + 14);
     sockaddr_in addr;
     addr.sin_addr.s_addr = ip->des_addr;
-   
+
     return QString(inet_ntoa(addr.sin_addr));
 }
 

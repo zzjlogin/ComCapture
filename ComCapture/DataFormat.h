@@ -22,14 +22,14 @@ typedef unsigned long	u_long;		//4Byte
  */
 typedef struct Ethernet_Header
 {
-	u_char ether_dst_host[6];
-	u_char ether_src_host[6];
-	u_short type;
+    u_char ether_dst_host[6];
+    u_char ether_src_host[6];
+    u_short type;
 }ETHERNET_HEADER, Ethernet_Header;
 
 /**IPv4 header
-	0                   1                   2                   3
-	0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |Version|  IHL  |Type of Service|          Total Length         |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -46,21 +46,21 @@ typedef struct Ethernet_Header
 */
 typedef struct IPv4_Header
 {
-	u_char version_IHL;    // version [4 bit] and length of header [4 bit]
-	u_char TOS;                     // Type of Service/DS_byte [1 byte]
-	u_short total_length;           // ip package total length [2 byte]
-	u_short identification;         // identification [2 byte]
-	u_short flag_offset;            // flag [3 bit] and offset [13 bit]
-	u_char ttl;                     // TTL [1 byte]
-	u_char protocol;                // protocal [1 byte]
-	u_short checksum;               // checksum [2 byte]
-	u_int src_addr;                 // source address [4 byte]
-	u_int des_addr;                 // destination address [4 byte]
+    u_char version_IHL;    // version [4 bit] and length of header [4 bit]
+    u_char TOS;                     // Type of Service/DS_byte [1 byte]
+    u_short total_length;           // ip package total length [2 byte]
+    u_short identification;         // identification [2 byte]
+    u_short flag_offset;            // flag [3 bit] and offset [13 bit]
+    u_char ttl;                     // TTL [1 byte]
+    u_char protocol;                // protocal [1 byte]
+    u_short checksum;               // checksum [2 byte]
+    u_int src_addr;                 // source address [4 byte]
+    u_int des_addr;                 // destination address [4 byte]
 }IPv4_Header, IPV4_HEADER;
 
 /**TCP header
-	0                   1                   2                   3
-	0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |          Source Port          |       Destination Port        |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -81,40 +81,40 @@ typedef struct IPv4_Header
  */
 typedef struct TCP_Header
 {
-	u_short src_port;         // source port [2 byte]
-	u_short dst_port;         // destination [2 byte]
-	u_int sequence;           // sequence number [4 byte]
-	u_int ack;                // Confirm serial number [4 byte]
-	u_char header_length;     // header length [4 bit]
-	u_char flags;             // flags [6 bit]
-	u_short window_size;      // size of window [2 byte]
-	u_short checksum;         // checksum [2 byte]
-	u_short urgent;           // urgent pointer [2 byte]
+    u_short src_port;         // source port [2 byte]
+    u_short dst_port;         // destination [2 byte]
+    u_int sequence;           // sequence number [4 byte]
+    u_int ack;                // Confirm serial number [4 byte]
+    u_char header_length;     // header length [4 bit]
+    u_char flags;             // flags [6 bit]
+    u_short window_size;      // size of window [2 byte]
+    u_short checksum;         // checksum [2 byte]
+    u_short urgent;           // urgent pointer [2 byte]
 
-}TCP_Header,TCP_HEADER;
+}TCP_Header, TCP_HEADER;
 
 
 /**UDP header
-	0      7 8     15 16    23 24    31
-	+--------+--------+--------+--------+
-	|          source address           |
-	+--------+--------+--------+--------+
-	|        destination address        |
-	+--------+--------+--------+--------+
-	|  zero  |protocol|   UDP length    |
-	+--------+--------+--------+--------+
+    0      7 8     15 16    23 24    31
+    +--------+--------+--------+--------+
+    |          source address           |
+    +--------+--------+--------+--------+
+    |        destination address        |
+    +--------+--------+--------+--------+
+    |  zero  |protocol|   UDP length    |
+    +--------+--------+--------+--------+
 */
 typedef struct UDP_Header
 {
-	u_short src_port;      // source port [2 byte]
-	u_short dst_port;      // destination port [2 byte]
-	u_short data_length;   // data length [2 byte]
-	u_short checksum;      // checksum [2 byte]
+    u_short src_port;      // source port [2 byte]
+    u_short dst_port;      // destination port [2 byte]
+    u_short data_length;   // data length [2 byte]
+    u_short checksum;      // checksum [2 byte]
 }UDP_Header, UDP_HEADER;
 
 /**ICMP header
-	0                   1                   2                   3
-	0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |     Type      |     Code      |          Checksum             |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -125,11 +125,11 @@ typedef struct UDP_Header
 */
 
 typedef struct ICMP_Header {
-	u_char type;                    // type [1 byte]
-	u_char code;                    // code [1 byte]
-	u_short checksum;               // checksum [2 byte]
-	u_short identification;         // identification [2 byte]
-	u_short sequence;               // sequence [2 byte]
+    u_char type;                    // type [1 byte]
+    u_char code;                    // code [1 byte]
+    u_short checksum;               // checksum [2 byte]
+    u_short identification;         // identification [2 byte]
+    u_short sequence;               // sequence [2 byte]
 }ICMP_Header, ICMP_HEADER;
 
 //Arp
@@ -142,18 +142,18 @@ typedef struct ICMP_Header {
 +------+--------+-----+------+-------+----------+---------+---------------+--------------+
 */
 typedef struct Arp_Header {   // 28 byte
-	u_short hardware_type;   // hardware type [2 byte]
-	u_short protocol_type;   // protocol [2 byte]
-	u_char mac_length;       // MAC address length [1 byte]
-	u_char ip_length;        // IP address length [1 byte]
-	u_short op_code;         // operation code [2 byte]
+    u_short hardware_type;   // hardware type [2 byte]
+    u_short protocol_type;   // protocol [2 byte]
+    u_char mac_length;       // MAC address length [1 byte]
+    u_char ip_length;        // IP address length [1 byte]
+    u_short op_code;         // operation code [2 byte]
 
-	u_char src_eth_addr[6];  // source ether address [6 byte]
-	u_char src_ip_addr[4];   // source ip address [4 byte]
-	u_char des_eth_addr[6];  // destination ether address [6 byte]
-	u_char des_ip_addr[4];   // destination ip address [4 byte]
+    u_char src_eth_addr[6];  // source ether address [6 byte]
+    u_char src_ip_addr[4];   // source ip address [4 byte]
+    u_char des_eth_addr[6];  // destination ether address [6 byte]
+    u_char des_ip_addr[4];   // destination ip address [4 byte]
 
-}Arp_Header,ARP_HEADER;
+}Arp_Header, ARP_HEADER;
 
 // dns
 /*
@@ -168,29 +168,29 @@ typedef struct Arp_Header {   // 28 byte
 +--------------------------+---------------------------+
 */
 typedef struct DNS_Header {  // 12 byte
-	u_short identification; // Identification [2 byte]
-	u_short flags;          // Flags [total 2 byte]
-	u_short question;       // Question Number [2 byte]
-	u_short answer;         // Answer RRs [2 byte]
-	u_short authority;      // Authority RRs [2 byte]
-	u_short additional;     // Additional RRs [2 byte]
-}DNS_Header,DNS_HEADER;
+    u_short identification; // Identification [2 byte]
+    u_short flags;          // Flags [total 2 byte]
+    u_short question;       // Question Number [2 byte]
+    u_short answer;         // Answer RRs [2 byte]
+    u_short authority;      // Authority RRs [2 byte]
+    u_short additional;     // Additional RRs [2 byte]
+}DNS_Header, DNS_HEADER;
 
 // dns question
 typedef struct DNS_Question {
-	// char* name;          // Non-fixed
-	u_short query_type;     // 2 byte
-	u_short query_class;    // 2 byte
-}DNS_Question,DNS_QUESITON;
+    // char* name;          // Non-fixed
+    u_short query_type;     // 2 byte
+    u_short query_class;    // 2 byte
+}DNS_Question, DNS_QUESITON;
 
 typedef struct DNS_Answer {
-	// char* name          // Non-fixed
-	u_short answer_type;   // 2 byte
-	u_short answer_class;  // 2 byte
-	u_int TTL;             // 4 byte
-	u_short dataLength;    // 2 byte
-	//char* name           // Non-fixed
-}DNS_Answer,DNS_ANSWER;
+    // char* name          // Non-fixed
+    u_short answer_type;   // 2 byte
+    u_short answer_class;  // 2 byte
+    u_int TTL;             // 4 byte
+    u_short dataLength;    // 2 byte
+    //char* name           // Non-fixed
+}DNS_Answer, DNS_ANSWER;
 
 
 

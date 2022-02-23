@@ -3,26 +3,26 @@
 #include "DataPackProc.h"
 ComCapture::ComCapture(QWidget *parent)
     : QMainWindow(parent)
-	,mp_dataCaptueThread(new DataCaptureThread)
-    ,countNum(0)
-    ,numRow(-1)
+    , mp_dataCaptueThread(new DataCaptureThread)
+    , countNum(0)
+    , numRow(-1)
 {
     ui.setupUi(this);
-	initUi();
-	this->setWindowTitle("抓包工具");
+    initUi();
+    this->setWindowTitle("抓包工具");
 
 }
 
 ComCapture::~ComCapture()
 {
-	delete mp_dataCaptueThread;
-	mp_dataCaptueThread = nullptr;
+    delete mp_dataCaptueThread;
+    mp_dataCaptueThread = nullptr;
 }
 
 void ComCapture::on_action_startAndStop_triggered()
 {
-	if (isStop)
-	{
+    if (isStop)
+    {
         if (countNum != 0)
         {
             for (int i = 0; i < m_allData.size(); i++)
@@ -37,22 +37,22 @@ void ComCapture::on_action_startAndStop_triggered()
             countNum = 0;
         }
 
-		startCapture();
-	}
-	else
-	{
-		stopCapture();
-	}
-	
+        startCapture();
+    }
+    else
+    {
+        stopCapture();
+    }
+
 }
 
 void ComCapture::on_comboBox_currentIndexChanged(int index)
 {
-	int i = 0;
-	if (index)
-	{
-		for (device = all_device; i < index - 1; device = device->next,i++);
-	}
+    int i = 0;
+    if (index)
+    {
+        for (device = all_device; i < index - 1; device = device->next, i++);
+    }
 }
 
 
@@ -64,8 +64,8 @@ void ComCapture::on_dataProc_handle(DataPackProc *data)
     QColor color;
     if (type == "TCP")
     {
-        color.setRgb(216,191,216);
-    } 
+        color.setRgb(216, 191, 216);
+    }
     else if (type == "UDP")
     {
         color.setRgb(144, 238, 144);
@@ -95,13 +95,17 @@ void ComCapture::on_dataProc_handle(DataPackProc *data)
     ui.tw_show->setItem(countNum, 5, new QTableWidgetItem(data->getDataLen()));
     ui.tw_show->setItem(countNum, 6, new QTableWidgetItem(data->getInfo()));
 
-   for (size_t i = 0; i < 7; i++)
+    for (size_t i = 0; i < 7; i++)
     {
         ui.tw_show->item(countNum, i)->setBackgroundColor(color);
     }
     countNum++;
-	/*QString c = data->getDataLen();
-	QString t = data->getInfo();
+    //自动追踪底部
+    //ui.tw_show->scrollToBottom();
+    //回到顶端
+    //ui.tw_show->scrollToTop();
+    /*QString c = data->getDataLen();
+    QString t = data->getInfo();
     qDebug() << data->getTimeStamp() <<data->getInfo();*/
 }
 
@@ -123,7 +127,7 @@ void ComCapture::on_tw_show_cellClicked(int r, int c)
         QString srcMac = m_allData[numRow]->getSrcMacAddr();
         QString type = m_allData[numRow]->getMacType();
         QString tree = "Ethernet Ⅱ,Src:" + srcMac + " Dst:" + dstMac;
-        QTreeWidgetItem *item = new QTreeWidgetItem(QStringList()<<tree);
+        QTreeWidgetItem *item = new QTreeWidgetItem(QStringList() << tree);
         ui.treeW_show->addTopLevelItem(item);
         item->addChild(new QTreeWidgetItem(QStringList() << "Destination:" + dstMac));
         item->addChild(new QTreeWidgetItem(QStringList() << "Source:" + srcMac));
@@ -144,8 +148,8 @@ void ComCapture::on_tw_show_cellClicked(int r, int c)
 int ComCapture::initUi()
 {
 
-	ui.action_startAndStop->setIcon(QIcon("images/start.png"));
-	showNetCard();
+    ui.action_startAndStop->setIcon(QIcon("images/start.png"));
+    showNetCard();
     ui.statusBar->showMessage("welcome use this tool!");
     ui.mainToolBar->addAction(ui.action_startAndStop);
 
@@ -169,72 +173,74 @@ int ComCapture::initUi()
     ui.tw_show->verticalHeader()->setVisible(false);
     ui.tw_show->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-	return 0;
+    ui.treeW_show->resize(500, 20);
+
+    return 0;
 }
 
 int ComCapture::showNetCard()
 {
 
-	int n = pcap_findalldevs(&all_device, errbuf);
-	ui.comboBox->addItem("error: " ,errbuf);
-	if (n == -1) {
-		ui.comboBox->addItem("error: " + QString(errbuf));
-	}
-	else
-	{
-		ui.comboBox->clear();
-		ui.comboBox->addItem("pls choose card!");
-		for (device = all_device;device != nullptr;device = device->next)
-		{
-			QString device_name = device->name;
-			device_name = device_name.remove(QRegExp("\\\\Device.*\\}"));
-			QString des = device->description;
-			QString item = device_name + des;
-			ui.comboBox->addItem(item);
-		}
-	}
+    int n = pcap_findalldevs(&all_device, errbuf);
+    ui.comboBox->addItem("error: ", errbuf);
+    if (n == -1) {
+        ui.comboBox->addItem("error: " + QString(errbuf));
+    }
+    else
+    {
+        ui.comboBox->clear();
+        ui.comboBox->addItem("pls choose card!");
+        for (device = all_device; device != nullptr; device = device->next)
+        {
+            QString device_name = device->name;
+            device_name = device_name.remove(QRegExp("\\\\Device.*\\}"));
+            QString des = device->description;
+            QString item = device_name + des;
+            ui.comboBox->addItem(item);
+        }
+    }
 
-	return n;
+    return n;
 }
 
 int ComCapture::captureData()
 {
-	if (device)
-	{
-		m_ptr = pcap_open_live(device->name, 65535, 1, 1000, errbuf);
-	}
-	else
-	{
-		return -1;
-	}
-	if (!m_ptr)
-	{
-		pcap_freealldevs(all_device);
-		device = nullptr;
-		return -1;
-	}
-	else
-	{
-		if (pcap_datalink(m_ptr) != DLT_EN10MB)
-		{
+    if (device)
+    {
+        m_ptr = pcap_open_live(device->name, 65535, 1, 1000, errbuf);
+    }
+    else
+    {
+        return -1;
+    }
+    if (!m_ptr)
+    {
+        pcap_freealldevs(all_device);
+        device = nullptr;
+        return -1;
+    }
+    else
+    {
+        if (pcap_datalink(m_ptr) != DLT_EN10MB)
+        {
             pcap_close(m_ptr);
             pcap_freealldevs(all_device);
             device = nullptr;
             m_ptr = nullptr;
             return -1;
-		}
-	}
-	return 0;
+        }
+    }
+    return 0;
 }
 
 int ComCapture::startCapture()
 {
-	if (ui.comboBox->currentIndex() == 0)
-	{
-		return -1;
-	}
-	if (isStop)
-	{
+    if (ui.comboBox->currentIndex() == 0)
+    {
+        return -1;
+    }
+    if (isStop)
+    {
         ui.treeW_show->clear();
         ui.action_startAndStop->setText("暂停");
         ui.action_startAndStop->setIcon(QIcon("images/stop.png"));
@@ -243,16 +249,16 @@ int ComCapture::startCapture()
         mp_dataCaptueThread->setPointer(m_ptr);
         mp_dataCaptueThread->start();
         ui.comboBox->setDisabled(true);
-	}
-	return 0;
+    }
+    return 0;
 }
 
 int ComCapture::stopCapture()
 {
-	ui.action_startAndStop->setText("开始");
-	ui.action_startAndStop->setIcon(QIcon("images/start.png"));
-	isStop = !isStop;
-	mp_dataCaptueThread->stopCapture();
+    ui.action_startAndStop->setText("开始");
+    ui.action_startAndStop->setIcon(QIcon("images/start.png"));
+    isStop = !isStop;
+    mp_dataCaptueThread->stopCapture();
     ui.comboBox->setDisabled(false);
-	return 0;
+    return 0;
 }
