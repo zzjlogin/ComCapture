@@ -87,12 +87,15 @@
      <string>跳转</string>
     </property>
     <addaction name="action"/>
-    <addaction name="action_2"/>
-    <addaction name="action_3"/>
-    <addaction name="action_4"/>
-    <addaction name="action_5"/>
+    <addaction name="action_nextPacket"/>
+    <addaction name="action_prePacket"/>
+    <addaction name="action_firstPacket"/>
+    <addaction name="action_bottomPacket"/>
    </widget>
    <widget class="QMenu" name="menu_capture">
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <property name="title">
      <string>捕获</string>
     </property>
@@ -129,22 +132,22 @@
     <string>转至...分组</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="action_nextPacket">
    <property name="text">
     <string>下一分组</string>
    </property>
   </action>
-  <action name="action_3">
+  <action name="action_prePacket">
    <property name="text">
     <string>前一分组</string>
    </property>
   </action>
-  <action name="action_4">
+  <action name="action_firstPacket">
    <property name="text">
     <string>首个分组</string>
    </property>
   </action>
-  <action name="action_5">
+  <action name="action_bottomPacket">
    <property name="text">
     <string>最新分组</string>
    </property>

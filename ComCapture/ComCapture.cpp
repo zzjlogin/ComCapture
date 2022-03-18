@@ -19,10 +19,13 @@ ComCapture::~ComCapture()
     mp_dataCaptueThread = nullptr;
 }
 
-void ComCapture::on_action_startAndStop_triggered()
+void ComCapture::on_action_startAndStop_triggered(bool checked)
 {
+
+    //ui.action_startAndStop->setCheckable(true);
     if (isStop)
     {
+
         if (countNum != 0)
         {
             for (int i = 0; i < m_allData.size(); i++)
@@ -30,13 +33,16 @@ void ComCapture::on_action_startAndStop_triggered()
                 delete m_allData[i];
                 m_allData[i] = nullptr;
             }
+            for (auto it:m_allData)
+            {
+                delete it;
+            }
             m_allData.clear();
             QVector<DataPackProc*>swap(m_allData);
             ui.tw_show->clearContents();
             ui.tw_show->setRowCount(0);
             countNum = 0;
         }
-
         startCapture();
     }
     else
@@ -44,6 +50,50 @@ void ComCapture::on_action_startAndStop_triggered()
         stopCapture();
     }
 
+}
+
+void ComCapture::on_action_bottomPacket_triggered()
+{
+
+    QFont font = ui.action_bottomPacket->font();
+    if (font.pointSize() == 9)
+    {
+        font.setBold(true);
+        font.setPointSize(12);
+    }
+    else
+    {
+        font.setBold(false);
+        font.setPointSize(9);
+    }
+    ui.action_bottomPacket->setFont(font);
+    
+
+    m_isToBottom = (!m_isToBottom);
+    ui.tw_show->scrollToBottom();
+    if (m_isToBottom)
+    {
+        //ui.action_bottomPacket->
+    }
+}
+
+void ComCapture::on_action_firstPacket_triggered()
+{
+    m_isToBottom = false;
+    ui.tw_show->scrollToTop();
+}
+
+void ComCapture::on_action_clear_triggered()
+{
+    for (auto it : m_allData)
+    {
+        delete it;
+    }
+    m_allData.clear();
+    QVector<DataPackProc*>swap(m_allData);
+    ui.tw_show->clearContents();
+    ui.tw_show->setRowCount(0);
+    countNum = 0;
 }
 
 void ComCapture::on_comboBox_currentIndexChanged(int index)
@@ -100,8 +150,21 @@ void ComCapture::on_dataProc_handle(DataPackProc *data)
         ui.tw_show->item(countNum, i)->setBackgroundColor(color);
     }
     countNum++;
-    //自动追踪底部
-    //ui.tw_show->scrollToBottom();
+
+    //获取滚动条位置
+    bool atEnd(false);
+    int maxSize = ui.tw_show->verticalScrollBar()->maximum();
+    int nowSize = ui.tw_show->verticalScrollBar()->value();
+    (maxSize-nowSize<100 || countNum<500) ? atEnd = true : atEnd = false;
+
+    if (m_isToBottom && atEnd)
+    {//自动追踪底部
+        if (countNum%20 == 0 || countNum<500)
+        {
+            ui.tw_show->scrollToBottom();
+        }
+    }
+
     //回到顶端
     //ui.tw_show->scrollToTop();
     /*QString c = data->getDataLen();
@@ -132,8 +195,6 @@ void ComCapture::on_tw_show_cellClicked(int r, int c)
         item->addChild(new QTreeWidgetItem(QStringList() << "Destination:" + dstMac));
         item->addChild(new QTreeWidgetItem(QStringList() << "Source:" + srcMac));
         item->addChild(new QTreeWidgetItem(QStringList() << "Type:" + type));
-
-
     }
 
 
@@ -149,9 +210,19 @@ int ComCapture::initUi()
 {
 
     ui.action_startAndStop->setIcon(QIcon("images/start.png"));
+    
+    ui.action_clear->setIcon(QIcon("images/clear.png"));
+    ui.action_bottomPacket->setIcon(QIcon("images/bottom.png"));
+    ui.action_firstPacket->setIcon(QIcon("images/top.png"));
     showNetCard();
     ui.statusBar->showMessage("welcome use this tool!");
     ui.mainToolBar->addAction(ui.action_startAndStop);
+    ui.mainToolBar->addAction(ui.action_clear);
+    ui.mainToolBar->addAction(ui.action_bottomPacket);
+    ui.mainToolBar->addAction(ui.action_firstPacket);
+
+    //ui.mainToolBar->setStyleSheet("QMenu::item:default { color: #ff0000; }");
+ 
 
     static bool index = false;
     //qRegisterMetaType< DataPackProc >("DataPackProc");
@@ -180,7 +251,6 @@ int ComCapture::initUi()
 
 int ComCapture::showNetCard()
 {
-
     int n = pcap_findalldevs(&all_device, errbuf);
     ui.comboBox->addItem("error: ", errbuf);
     if (n == -1) {
@@ -199,7 +269,6 @@ int ComCapture::showNetCard()
             ui.comboBox->addItem(item);
         }
     }
-
     return n;
 }
 
@@ -241,6 +310,11 @@ int ComCapture::startCapture()
     }
     if (isStop)
     {
+        QFont font = ui.action_startAndStop->font();
+        font.setBold(true);
+        font.setPointSize(12);
+        ui.action_startAndStop->setFont(font);
+
         ui.treeW_show->clear();
         ui.action_startAndStop->setText("暂停");
         ui.action_startAndStop->setIcon(QIcon("images/stop.png"));
@@ -255,6 +329,12 @@ int ComCapture::startCapture()
 
 int ComCapture::stopCapture()
 {
+    QFont font = ui.action_startAndStop->font();
+    font.setBold(false);
+    font.setPointSize(9);
+    ui.action_startAndStop->setFont(font);
+
+
     ui.action_startAndStop->setText("开始");
     ui.action_startAndStop->setIcon(QIcon("images/start.png"));
     isStop = !isStop;

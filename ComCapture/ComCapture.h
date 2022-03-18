@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QtWidgets/QMainWindow>
 #include "ui_ComCapture.h"
@@ -15,6 +15,8 @@
 #include <QVector>
 #include <QColor>
 #include <QTableWidget>
+#include <QScrollBar>
+
 
 class ComCapture : public QMainWindow
 {
@@ -25,8 +27,17 @@ public:
     ~ComCapture();
 
 public slots:
+    //开始结束菜单
+    void on_action_startAndStop_triggered(bool checked);
+    //追踪最新数据包菜单
+    void on_action_bottomPacket_triggered();
 
-    void on_action_startAndStop_triggered();
+    //到第一个数据包
+    void on_action_firstPacket_triggered();
+    //清除数据包
+    void on_action_clear_triggered();
+
+public slots:
 
     void on_comboBox_currentIndexChanged(int index);
 
@@ -38,6 +49,9 @@ private:
     Ui::ComCaptureClass ui;
 
     bool isStop = true;
+
+    //底部自动追踪
+    bool m_isToBottom = false;
 
     pcap_if_t *all_device;
     pcap_if_t *device;
